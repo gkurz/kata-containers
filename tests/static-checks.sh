@@ -681,6 +681,8 @@ static_check_docs()
 		# xurls is very fussy about how it's built.
 		go install "${url}@${version}"
 
+		# We want literal $GOPATH and $PATH
+		# shellcheck disable=SC2016
 		command -v xurls &>/dev/null ||
 			die 'xurls not found. Ensure that "$GOPATH/bin" is in your $PATH'
 	fi
@@ -753,6 +755,8 @@ static_check_docs()
 	command -v kata-check-markdown &>/dev/null ||\
 		(cd "${test_dir}/cmd/check-markdown" && make)
 
+	# We want literal $GOPATH and $PATH
+	# shellcheck disable=SC2016
 	command -v kata-check-markdown &>/dev/null || \
 		die 'kata-check-markdown command not found. Ensure that "$GOPATH/bin" is in your $PATH.'
 
