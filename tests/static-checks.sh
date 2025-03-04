@@ -1043,29 +1043,26 @@ static_check_vendor()
 {
 	pushd $repo_path
 
-	local files
-	local files_arr=()
+	local dirs
+	local dirs_arr=()
+	local line
+	local dir
 
-	files=$(find . -type f -name "go.mod")
+	# Get all directories that contain a go module
+	dirs=$(find . -type f -name "go.mod" -printf "%h\n")
 
 	while IFS= read -r line; do
-		files_arr+=("$line")
-	done <<< "$files"
+		dirs_arr+=("${line}")
+	done <<< "${dirs}"
 
-	for file in "${files_arr[@]}"; do
-	        local dir=$(echo $file | sed 's/go\.mod//')
-
+	for dir in "${dirs_arr[@]}"; do
 	        pushd $dir
-
-		# Check if directory has been changed to use go modules
-		if [ -f "go.mod" ]; then
-			info "go.mod file found in $dir, running go mod verify instead"
-			# This verifies the integrity of modules in the local cache.
-			# This does not really verify the integrity of vendored code:
-			# https://github.com/golang/go/issues/27348
-			# Once that is added we need to add an extra step to verify vendored code.
-			go mod verify
-		fi
+		info "Running 'go mod verify' in ${dir}"
+		# This verifies the integrity of modules in the local cache.
+		# This does not really verify the integrity of vendored code:
+		# https://github.com/golang/go/issues/27348
+		# Once that is added we need to add an extra step to verify vendored code.
+		go mod verify
 		popd
 	done
 
